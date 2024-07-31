@@ -23,7 +23,9 @@ const createDocument = mutation({
     title: v.string(),
   },
   async handler(ctx, args) {
-    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    // const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    const user = await ctx.auth.getUserIdentity();
+    const userId = user?.tokenIdentifier;
     console.log("userId :>> ", userId);
     if (!userId) {
       throw new ConvexError("Not logged in");
