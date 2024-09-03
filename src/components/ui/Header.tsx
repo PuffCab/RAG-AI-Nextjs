@@ -1,11 +1,8 @@
 "use client";
 import React from "react";
 import { ModeToggle } from "./ModeToggle";
-import { Authenticated, Unauthenticated } from "convex/react";
-import { SignInButton, UserButton } from "@clerk/nextjs";
-import { Button } from "./button";
-import { createDocument } from "../../../convex/documents";
 import Image from "next/image";
+import { HeaderActions } from "@/app/actions";
 
 function Header() {
   return (
@@ -22,16 +19,9 @@ function Header() {
           <div>My RAG APP</div>
         </div>
 
-        <div>
-          <Unauthenticated>
-            <SignInButton />
-          </Unauthenticated>
-          <Authenticated>
-            <div className="flex gap-6">
-              <ModeToggle />
-              <UserButton />
-            </div>
-          </Authenticated>
+        <div className="flex gap-6 items-center">
+          <ModeToggle />
+          <HeaderActions />
         </div>
       </div>
     </div>
