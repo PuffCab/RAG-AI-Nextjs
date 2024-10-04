@@ -13,6 +13,7 @@ import { ModeToggle } from "@/components/ui/ModeToggle";
 export default function Home() {
   const documents = useQuery(api.documents.getDocuments);
   const createDocument = useMutation(api.documents.createDocument);
+  // ...
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
