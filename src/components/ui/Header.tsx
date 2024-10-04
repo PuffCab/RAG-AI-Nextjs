@@ -11,10 +11,10 @@ function Header() {
         <div className="flex items-center gap-4 text-2xl">
           <Image
             className="rounded "
-            src="/homer.jpg"
+            src="/homer-4.jpg"
             alt="logo from homer "
-            width={40}
-            height={40}
+            width={50}
+            height={50}
           />
           <div>My RAG APP</div>
         </div>

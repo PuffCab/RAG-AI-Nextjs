@@ -21,6 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // NOTE we added suppressHydrationWarning because an error provoked by the colortheme with the header "app-index.js:33 Warning: Extra attributes from the server: class,style"
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
