@@ -11,11 +11,13 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import NewDocForm from "./NewDocForm";
+import { useState } from "react";
 
 function CreateDocButton() {
   //   const createDocument = useMutation(api.documents.createDocument); //moved to form
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
         {" "}
         {/* NOTE using button inside dialogTrigger , triggers error of button nested inside button, and using "asChild" as property for DIalogTrigger, triggers another error of cannot render child inside child */}
@@ -33,7 +35,8 @@ function CreateDocButton() {
           <DialogDescription>
             Upload document with new information as source of information
           </DialogDescription>
-          <NewDocForm />
+          {/* <NewDocForm onUpload={() => setIsOpen(false)} /> */}
+          <NewDocForm setIsOpen={setIsOpen} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

@@ -15,6 +15,12 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { Loader } from "lucide-react";
+import ButtonWithLoader from "./ButtonWithLoader";
+
+type ComponentProps = {
+  setIsOpen: (a: boolean) => void;
+};
 
 const formSchema = z.object({
   title: z
@@ -25,7 +31,7 @@ const formSchema = z.object({
     .max(50),
 });
 
-function NewDocForm() {
+function NewDocForm({ setIsOpen }: ComponentProps) {
   const createDocument = useMutation(api.documents.createDocument);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -35,11 +41,13 @@ function NewDocForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    new Promise((resolve) => setTimeout(resolve, 2000));
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    createDocument({ title: "My first document" });
+    await createDocument({ title: values.title });
+    setIsOpen(false);
   }
 
   return (
@@ -58,7 +66,12 @@ function NewDocForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Upload to DB</Button>
+        <ButtonWithLoader
+          isLoading={form.formState.isSubmitting}
+          loadingText={"Uploading"}
+        >
+          Upload
+        </ButtonWithLoader>
       </form>
     </Form>
   );
