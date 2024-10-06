@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,10 +28,12 @@ const formSchema = z.object({
       message: "Title must be at least 2 characters.",
     })
     .max(50),
+  file: z.instanceof(File),
 });
 
 function NewDocForm({ setIsOpen }: ComponentProps) {
   const createDocument = useMutation(api.documents.createDocument);
+  const generateUploadUrl = useMutation(api.documents.generateUploadUrl);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,11 +43,22 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const postUrl = await generateUploadUrl();
+
+    console.log("url:::", postUrl);
+
+    const result = await fetch(postUrl, {
+      method: "POST",
+      headers: { "Content-Type": values.file.type },
+      body: values.file,
+    });
+
     new Promise((resolve) => setTimeout(resolve, 2000));
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
-    await createDocument({ title: values.title });
+    console.log("values:::", values);
+    // await createDocument({ title: values.title });
+    await createDocument(values);
     setIsOpen(false);
   }
 
@@ -61,6 +73,26 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input placeholder="Title of the Document" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="file"
+          render={({ field: { value, onChange, ...fieldProps } }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input
+                  {...fieldProps}
+                  type="file"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    onChange(file);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

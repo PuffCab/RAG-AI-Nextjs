@@ -1,6 +1,10 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+const generateUploadUrl = mutation(async (ctx) => {
+  return await ctx.storage.generateUploadUrl();
+});
+
 const getDocuments = query({
   async handler(ctx) {
     // return await ctx.db.query("documents").collect(); // we comment this line when we move on to query douments by user identifier
@@ -38,4 +42,4 @@ const createDocument = mutation({
   },
 });
 
-export { createDocument, getDocuments };
+export { createDocument, getDocuments, generateUploadUrl };
