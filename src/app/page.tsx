@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 import DocumentCard from "@/components/DocumentCard";
-import CreateDocButton from "@/components/CreateDocButton";
+import UploadDocButton from "@/components/UploadDocButton";
 
 export default function Home() {
   const documents = useQuery(api.documents.getDocuments);
@@ -24,7 +24,7 @@ export default function Home() {
         >
           Add doc to DB
         </Button> */}
-        <CreateDocButton />
+        <UploadDocButton />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

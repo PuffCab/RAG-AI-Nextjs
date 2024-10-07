@@ -12,8 +12,9 @@ import {
 } from "./ui/dialog";
 import NewDocForm from "./NewDocForm";
 import { useState } from "react";
+import { Upload } from "lucide-react";
 
-function CreateDocButton() {
+function UploadDocButton() {
   //   const createDocument = useMutation(api.documents.createDocument); //moved to form
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -22,10 +23,12 @@ function CreateDocButton() {
         {" "}
         {/* NOTE using button inside dialogTrigger , triggers error of button nested inside button, and using "asChild" as property for DIalogTrigger, triggers another error of cannot render child inside child */}
         <span
-        //   onClick={() => {
-        //     createDocument({ title: "My first document" });
-        //   }}
+          //   onClick={() => {
+          //     createDocument({ title: "My first document" });
+          //   }}
+          className="flex items-center gap-1"
         >
+          <Upload className="w-4 h-4" />
           Open Form to add DOc
         </span>
       </DialogTrigger>
@@ -43,4 +46,4 @@ function CreateDocButton() {
   );
 }
 
-export default CreateDocButton;
+export default UploadDocButton;

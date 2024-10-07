@@ -44,22 +44,35 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const postUrl = await generateUploadUrl();
+    // NOTE create utils function to check file type and ensure is the one we want
+    try {
+      const response = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": values.file.type },
+        body: values.file,
+      });
 
-    console.log("url:::", postUrl);
-
-    const result = await fetch(postUrl, {
-      method: "POST",
-      headers: { "Content-Type": values.file.type },
-      body: values.file,
-    });
-
-    new Promise((resolve) => setTimeout(resolve, 2000));
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log("values:::", values);
-    // await createDocument({ title: values.title });
-    await createDocument(values);
-    setIsOpen(false);
+      if (!response.ok) {
+        throw new Error(
+          "There was a problem processing the file on the server"
+        );
+      }
+      if (response.ok) {
+        const { storageId } = await response.json();
+        // new Promise((resolve) => setTimeout(resolve, 2000));
+        // Do something with the form values.
+        // ✅ This will be type-safe and validated.
+        console.log("values:::", values);
+        // await createDocument({ title: values.title });
+        await createDocument({
+          title: values.title,
+          storageId: storageId as string,
+        });
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
   }
 
   return (
@@ -88,6 +101,7 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
                 <Input
                   {...fieldProps}
                   type="file"
+                  accept=".xml, .doc, .txt"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     onChange(file);

@@ -21,10 +21,34 @@ const getDocuments = query({
       .collect();
   },
 });
+const getSingleDocument = query({
+  args: {
+    docId: v.id("documents"),
+  },
+  async handler(ctx, args) {
+    //make sure user is logged in
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+    console.log("userId :>> ", userId);
+    //NOTE create helper functions for this checks
+    if (!userId) {
+      return null;
+    }
+
+    const document = await ctx.db.get(args.docId);
+    if (!document) {
+      return null;
+    }
+    if (document?.tokenIdentifier !== userId) {
+      return null;
+    }
+    return document;
+  },
+});
 
 const createDocument = mutation({
   args: {
     title: v.string(),
+    storageId: v.string(),
   },
   async handler(ctx, args) {
     // const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
@@ -38,8 +62,9 @@ const createDocument = mutation({
     await ctx.db.insert("documents", {
       title: args.title,
       tokenIdentifier: userId,
+      storageId: args.storageId,
     });
   },
 });
 
-export { createDocument, getDocuments, generateUploadUrl };
+export { createDocument, getDocuments, generateUploadUrl, getSingleDocument };

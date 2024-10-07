@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/button";
+import { Eye } from "lucide-react";
+import Link from "next/link";
 
 type PropsType = {
   document: Doc<"documents">;
@@ -24,7 +26,12 @@ function DocumentCard({ document }: PropsType) {
         <p>Card Content</p>
       </CardContent>
       <CardFooter>
-        <Button variant={"secondary"}>Show Doc</Button>
+        <Link href={`/documents/${document._id}`}>
+          <Button variant={"secondary"} className="flex items-center gap-1">
+            <Eye className="w-4 h-4" />
+            Show Doc
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
