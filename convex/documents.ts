@@ -41,14 +41,17 @@ const getSingleDocument = query({
     if (document?.tokenIdentifier !== userId) {
       return null;
     }
-    return document;
+    return {
+      ...document,
+      documentURL: await ctx.storage.getUrl(document.storageId),
+    };
   },
 });
 
 const createDocument = mutation({
   args: {
     title: v.string(),
-    storageId: v.string(),
+    storageId: v.id("_storage"),
   },
   async handler(ctx, args) {
     // const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;

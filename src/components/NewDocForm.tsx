@@ -16,6 +16,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Loader } from "lucide-react";
 import ButtonWithLoader from "./ButtonWithLoader";
+import { Id } from "../../convex/_generated/dataModel";
 
 type ComponentProps = {
   setIsOpen: (a: boolean) => void;
@@ -66,7 +67,8 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
         // await createDocument({ title: values.title });
         await createDocument({
           title: values.title,
-          storageId: storageId as string,
+          // storageId: storageId as string,
+          storageId: storageId as Id<"_storage">,
         });
         setIsOpen(false);
       }
