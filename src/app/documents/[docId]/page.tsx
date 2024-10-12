@@ -2,6 +2,7 @@
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import ChatBox from "@/components/SingleDocumentPage/ChatBox";
 
 type ComponentProps = {
   params: {
@@ -26,12 +27,12 @@ function SingleDoc({ params: { docId } }: ComponentProps) {
         )}
       </div>
       <div className="flex gap-4 ">
-        <div className="bg-gray-600 p-4 rounded flex-1 h-[600px]">
+        <div className="bg-gray-600 p-4 rounded flex-1 h-[300px]">
           {document?.documentURL && (
             <iframe src={document.documentURL} className="w-full h-full" />
           )}
         </div>
-        <div className="w-[250px] bg-gray-600 p-4 rounded">chatbox</div>
+        <ChatBox docId={docId} />
       </div>
     </main>
   );
