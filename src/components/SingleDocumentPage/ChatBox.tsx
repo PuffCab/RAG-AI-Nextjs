@@ -6,6 +6,7 @@ import { Input } from "../ui/input";
 import { useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 
 type ComponentProps = {
   docId: Id<"documents">;
@@ -26,21 +27,30 @@ function ChatBox({ docId }: ComponentProps) {
   };
 
   return (
-    <div className="w-[250px] bg-gray-600 flex flex-col justify-between p-2 gap-2 rounded">
-      <div className="h-[230px] overflow-y-auto">
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
-        <div className="p-3 bg-gray-800">one query</div>
+    <div className=" bg-gray-600 flex flex-col justify-between p-2 gap-2 rounded">
+      <div className="h-[230px] overflow-y-auto space-y-1">
+        <div className="bg-slate-800 p-1 rounded">
+          BOT : What do you want to know about this document?
+        </div>
+        {/* <div className="bg-slate-800 p-1 rounded">this will be AIs answer</div> */}
+        <div
+          className={(cn({ "bg-slate-700": true }), "rounded p-2 text-right")}
+        >
+          USER question
+        </div>
       </div>
-      <div>
-        <form onSubmit={makeQuery} className="flex gap-1">
-          <Input type="text" name="chat" id="chat" required />
-          <Button>Submit</Button>
+      <div className="flex gap-1">
+        <form onSubmit={makeQuery} className="flex-1">
+          <div className="flex gap-2">
+            <Input
+              className="flex-1"
+              type="text"
+              name="chat"
+              id="chat"
+              required
+            />
+            <Button>Submit</Button>
+          </div>
         </form>
       </div>
     </div>

@@ -1,7 +1,14 @@
 import { ConvexError, v } from "convex/values";
-import { action, mutation, query } from "./_generated/server";
-import { api } from "./_generated/api";
+import {
+  MutationCtx,
+  QueryCtx,
+  action,
+  mutation,
+  query,
+} from "./_generated/server";
+import { api, internal } from "./_generated/api";
 import OpenAI from "openai";
+import { Id } from "./_generated/dataModel";
 
 const client = new OpenAI({
   // apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
@@ -28,24 +35,36 @@ const getDocuments = query({
       .collect();
   },
 });
+
+const hasAccessToDocument = async (
+  ctx: MutationCtx | QueryCtx,
+  docId: Id<"documents">
+) => {
+  const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+  console.log("userId :>> ", userId);
+  //NOTE create helper functions for this checks
+  if (!userId) {
+    return null;
+  }
+
+  const document = await ctx.db.get(docId);
+  if (!document) {
+    return null;
+  }
+  if (document.tokenIdentifier !== userId) {
+    return null;
+  }
+  return document;
+};
 const getSingleDocument = query({
   args: {
     docId: v.id("documents"),
   },
   async handler(ctx, args) {
     //make sure user is logged in
-    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    console.log("userId :>> ", userId);
-    //NOTE create helper functions for this checks
-    if (!userId) {
-      return null;
-    }
+    const document = await hasAccessToDocument(ctx, args.docId);
 
-    const document = await ctx.db.get(args.docId);
     if (!document) {
-      return null;
-    }
-    if (document?.tokenIdentifier !== userId) {
       return null;
     }
     return {
@@ -109,7 +128,7 @@ const sendQuestion = action({
           { role: "system", content: `This is a text file: ${documentText}` },
           {
             role: "user",
-            content: `You need to answer the following question with the information contained in the text file: ${args.query}`,
+            content: `You need to answer the questions using only the information contained in the text file: ${args.query}, no other external sources of information. If you cannot find the answer to the question with that information, answers simple that the document doesnt contain enough information to answer the question`,
           },
         ],
         model: "gpt-3.5-turbo",
@@ -118,7 +137,26 @@ const sendQuestion = action({
       "message Content:::",
       chatCompletion.choices[0].message.content
     );
-    return chatCompletion.choices[0].message.content;
+
+    //TODO: store user prompt in the chat collection
+    await ctx.runMutation(internal.chats.saveChat, {
+      chatId: args.docId,
+      text: args.query,
+      isHuman: true, //because this mutation will store only user questions,
+      tokenIdentifier: userId,
+    });
+
+    const aiAnswer =
+      chatCompletion.choices[0].message.content ??
+      "problems generating response";
+    //TODO: store AI response in the chat collection
+    await ctx.runMutation(internal.chats.saveChat, {
+      chatId: args.docId,
+      text: aiAnswer,
+      isHuman: true, //because this mutation will store only Ai answers,
+      tokenIdentifier: userId,
+    });
+    return aiAnswer;
   },
 });
 export {
@@ -127,4 +165,5 @@ export {
   generateUploadUrl,
   getSingleDocument,
   sendQuestion,
+  hasAccessToDocument,
 };
