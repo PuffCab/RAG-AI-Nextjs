@@ -3,6 +3,7 @@ import {
   MutationCtx,
   QueryCtx,
   action,
+  internalQuery,
   mutation,
   query,
 } from "./_generated/server";
@@ -14,6 +15,27 @@ const client = new OpenAI({
   // apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
   apiKey: process.env.OPENAI_API_KEY, // this is the name given by us to the env in convex dashboard.
 });
+
+const getDocumentObjectIfAuthorized = async (
+  ctx: MutationCtx | QueryCtx,
+  docId: Id<"documents">
+) => {
+  const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+  console.log("userId :>> ", userId);
+  //NOTE create helper functions for this checks
+  if (!userId) {
+    return null;
+  }
+
+  const document = await ctx.db.get(docId);
+  if (!document) {
+    return null;
+  }
+  if (document.tokenIdentifier !== userId) {
+    return null;
+  }
+  return { document, userId };
+};
 
 const generateUploadUrl = mutation(async (ctx) => {
   return await ctx.storage.generateUploadUrl();
@@ -36,40 +58,25 @@ const getDocuments = query({
   },
 });
 
-const hasAccessToDocument = async (
-  ctx: MutationCtx | QueryCtx,
-  docId: Id<"documents">
-) => {
-  const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-  console.log("userId :>> ", userId);
-  //NOTE create helper functions for this checks
-  if (!userId) {
-    return null;
-  }
-
-  const document = await ctx.db.get(docId);
-  if (!document) {
-    return null;
-  }
-  if (document.tokenIdentifier !== userId) {
-    return null;
-  }
-  return document;
-};
 const getSingleDocument = query({
   args: {
     docId: v.id("documents"),
   },
   async handler(ctx, args) {
     //make sure user is logged in
-    const document = await hasAccessToDocument(ctx, args.docId);
+    const accessDocumentObject = await getDocumentObjectIfAuthorized(
+      ctx,
+      args.docId
+    );
 
-    if (!document) {
+    if (!accessDocumentObject) {
       return null;
     }
     return {
-      ...document,
-      documentURL: await ctx.storage.getUrl(document.storageId),
+      ...accessDocumentObject.document,
+      documentURL: await ctx.storage.getUrl(
+        accessDocumentObject.document.storageId
+      ),
     };
   },
 });
@@ -96,28 +103,32 @@ const createDocument = mutation({
   },
 });
 
+const invokeDocumentAccessQuery = internalQuery({
+  args: {
+    docId: v.id("documents"),
+  },
+  async handler(ctx, args) {
+    return await getDocumentObjectIfAuthorized(ctx, args.docId);
+  },
+});
+
 const sendQuestion = action({
   args: {
     query: v.string(),
     docId: v.id("documents"),
   },
   async handler(ctx, args) {
-    const user = await ctx.auth.getUserIdentity();
-    const userId = user?.tokenIdentifier;
-    console.log("userId :>> ", userId);
+    const accessDocumentObject = await ctx.runQuery(
+      internal.documents.invokeDocumentAccessQuery,
+      {
+        docId: args.docId,
+      }
+    );
 
-    if (!userId) {
-      throw new ConvexError("Not logged in");
+    if (!accessDocumentObject) {
+      throw new ConvexError("user doesn't have access to this document");
     }
-
-    const document = await ctx.runQuery(api.documents.getSingleDocument, {
-      docId: args.docId,
-    });
-
-    if (!document) {
-      throw new ConvexError("No document with that ID in the Database");
-    }
-    const file = await ctx.storage.get(document.storageId);
+    const file = await ctx.storage.get(accessDocumentObject.document.storageId);
     if (!file) {
       throw new ConvexError("File not found");
     }
@@ -143,7 +154,7 @@ const sendQuestion = action({
       chatId: args.docId,
       text: args.query,
       isHuman: true, //because this mutation will store only user questions,
-      tokenIdentifier: userId,
+      tokenIdentifier: accessDocumentObject.userId,
     });
 
     const aiAnswer =
@@ -153,8 +164,8 @@ const sendQuestion = action({
     await ctx.runMutation(internal.chats.saveChat, {
       chatId: args.docId,
       text: aiAnswer,
-      isHuman: true, //because this mutation will store only Ai answers,
-      tokenIdentifier: userId,
+      isHuman: false, //because this mutation will store only Ai answers,
+      tokenIdentifier: accessDocumentObject.userId,
     });
     return aiAnswer;
   },
@@ -165,5 +176,6 @@ export {
   generateUploadUrl,
   getSingleDocument,
   sendQuestion,
-  hasAccessToDocument,
+  getDocumentObjectIfAuthorized,
+  invokeDocumentAccessQuery,
 };

@@ -3,7 +3,7 @@
 import { FormEvent } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { useAction } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,10 @@ type ComponentProps = {
 };
 
 function ChatBox({ docId }: ComponentProps) {
+  const chats = useQuery(api.chats.getAllChatDocuments, {
+    chatId: docId,
+  });
+
   const sendMessage = useAction(api.documents.sendQuestion);
   const makeQuery = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,11 +37,23 @@ function ChatBox({ docId }: ComponentProps) {
           BOT : What do you want to know about this document?
         </div>
         {/* <div className="bg-slate-800 p-1 rounded">this will be AIs answer</div> */}
-        <div
-          className={(cn({ "bg-slate-700": true }), "rounded p-2 text-right")}
-        >
-          USER question
-        </div>
+        {chats?.map((chatDocument) => {
+          console.log("chatDocument", chatDocument);
+          return (
+            <div
+              key={chatDocument._id}
+              className={cn(
+                {
+                  "bg-slate-700": chatDocument.isUser,
+                  "text-right": chatDocument.isUser,
+                },
+                "rounded p-2 "
+              )}
+            >
+              {chatDocument.isUser ? "User" : "BOT"}: {chatDocument.text}
+            </div>
+          );
+        })}
       </div>
       <div className="flex gap-1">
         <form onSubmit={makeQuery} className="flex-1">

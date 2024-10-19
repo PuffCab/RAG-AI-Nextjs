@@ -23,12 +23,15 @@ const getAllChatDocuments = query({
     chatId: v.id("documents"),
   },
   async handler(ctx, args) {
+    const user = await ctx.auth.getUserIdentity();
+    const userId = user?.tokenIdentifier;
+    if (!userId) {
+      return [];
+    }
     return await ctx.db
       .query("chats")
       .withIndex("by_chatId_tokenIdentifier", (q) => {
-        return q
-          .eq("chatId", args.chatId)
-          .eq("tokenIdentifier", ctx.auth.tokenIdentifier);
+        return q.eq("chatId", args.chatId).eq("tokenIdentifier", userId);
       })
       .collect();
   },
