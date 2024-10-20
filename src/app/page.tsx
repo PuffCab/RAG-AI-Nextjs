@@ -5,6 +5,9 @@ import { api } from "../../convex/_generated/api";
 
 import DocumentCard from "@/components/DocumentCard";
 import UploadDocButton from "@/components/UploadDocButton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
+import Image from "next/image";
 
 export default function Home() {
   const documents = useQuery(api.documents.getDocuments);
@@ -27,12 +30,43 @@ export default function Home() {
         <UploadDocButton />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {documents?.map((doc) => {
-          // return <div key={doc._id}>{doc.title}</div>;
-          return <DocumentCard document={doc} key={doc._id} />;
-        })}
-      </div>
+      {!documents && (
+        <div className="grid grid-cols-2 gap-4">
+          {new Array(6).fill("").map((_, i) => {
+            return (
+              <Card
+                key={i}
+                className="h-[200px] p-4 flex flex-col justify-between"
+              >
+                <Skeleton className="h-[30px] rounded" />
+                <Skeleton className="h-[30px] rounded" />
+                <Skeleton className="w-[80px] h-[30px] rounded" />
+              </Card>
+            );
+          })}
+        </div>
+      )}
+      {documents && documents.length === 0 && (
+        <div className=" flex flex-col items-center gap-4 py-16">
+          <Image
+            src={"/files.svg"}
+            alt="picture representing several text files "
+            width={300}
+            height={300}
+          />
+          <h2 className="text-2xl font-bold">No Documents yet</h2>
+          <UploadDocButton />
+        </div>
+      )}
+
+      {documents && documents.length > 0 && (
+        <div className="grid grid-cols-2 gap-4">
+          {documents?.map((doc) => {
+            // return <div key={doc._id}>{doc.title}</div>;
+            return <DocumentCard document={doc} key={doc._id} />;
+          })}
+        </div>
+      )}
     </main>
   );
 }

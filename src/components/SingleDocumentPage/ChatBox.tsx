@@ -46,12 +46,13 @@ function ChatBox({ docId }: ComponentProps) {
               className={cn(
                 {
                   "bg-gray-100 text-black": chatDocument.isUser,
+                  "bg-slate-800": !chatDocument.isUser,
                   "text-right": chatDocument.isUser,
                 },
                 "rounded p-2 whitespace-pre-line"
               )}
             >
-              {chatDocument.isUser ? "User" : "BOT"}: {chatDocument.text}
+              {chatDocument.isUser ? "USER" : "BOT"}: {chatDocument.text}
             </div>
           );
         })}

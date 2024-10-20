@@ -47,7 +47,8 @@ const getDocuments = query({
     const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
     console.log("userId :>> ", userId);
     if (!userId) {
-      return [];
+      // return [];
+      return undefined; //to prevent showing the no documents place holder while loading
     }
     return await ctx.db
       .query("documents")
