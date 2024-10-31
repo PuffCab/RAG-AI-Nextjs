@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/button";
-import { Eye } from "lucide-react";
+import { Eye, Loader, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 type PropsType = {
@@ -23,7 +23,13 @@ function DocumentCard({ document }: PropsType) {
         {/* <CardDescription>no description yet</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        {!document.description ? (
+          <div className="flex justify-center">
+            <Loader className="animate-spin" />
+          </div>
+        ) : (
+          document.description
+        )}
       </CardContent>
       <CardFooter>
         <Link href={`/documents/${document._id}`}>

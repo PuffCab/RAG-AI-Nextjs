@@ -3,6 +3,8 @@ import {
   MutationCtx,
   QueryCtx,
   action,
+  internalAction,
+  internalMutation,
   internalQuery,
   mutation,
   query,
@@ -95,12 +97,20 @@ const createDocument = mutation({
     if (!userId) {
       throw new ConvexError("Not logged in");
     }
-
-    await ctx.db.insert("documents", {
+    //we name this below documentId, to use it in the scheduler.
+    const documentId = await ctx.db.insert("documents", {
       title: args.title,
       tokenIdentifier: userId,
       storageId: args.storageId,
+      description: "",
     });
+
+    //we run the internal operations to generate description. using scheduler (we could use just runQuery  or similars), which access like a queing system that runs several mutations, etc..
+    await ctx.scheduler.runAfter(
+      0,
+      internal.documents.generateDocumentDescription,
+      { fileId: args.storageId, docId: documentId }
+    );
   },
 });
 
@@ -110,6 +120,58 @@ const invokeDocumentAccessQuery = internalQuery({
   },
   async handler(ctx, args) {
     return await getDocumentObjectIfAuthorized(ctx, args.docId);
+  },
+});
+
+const generateDocumentDescription = internalAction({
+  args: {
+    fileId: v.id("_storage"),
+    docId: v.id("documents"),
+  },
+  async handler(ctx, args) {
+    const file = await ctx.storage.get(args.fileId);
+    if (!file) {
+      throw new ConvexError("File not found");
+    }
+    //get the text from the file
+    const documentText = await file.text();
+    const chatCompletion: OpenAI.Chat.Completions.ChatCompletion =
+      await client.chat.completions.create({
+        messages: [
+          { role: "system", content: `This is a text file: ${documentText}` },
+          {
+            role: "user",
+            content: `Generate a description for this documents.The descriptión should should make clear what is the content of the document in just one sentence and less than 100 characteres.`,
+          },
+        ],
+        model: "gpt-3.5-turbo",
+      });
+    console.log(
+      "message Content:::",
+      chatCompletion.choices[0].message.content
+    );
+
+    //get response from AI
+    const aiAnswer =
+      chatCompletion.choices[0].message.content ??
+      "problems generating document's description";
+    //update the current document Id (we create updateDocumentDescription)
+    await ctx.runMutation(internal.documents.updateDocumentDescription, {
+      docId: args.docId,
+      description: aiAnswer,
+    });
+  },
+});
+
+const updateDocumentDescription = internalMutation({
+  args: {
+    docId: v.id("documents"),
+    description: v.string(),
+  },
+  async handler(ctx, args) {
+    await ctx.db.patch(args.docId, {
+      description: args.description,
+    });
   },
 });
 
@@ -179,4 +241,6 @@ export {
   sendQuestion,
   getDocumentObjectIfAuthorized,
   invokeDocumentAccessQuery,
+  generateDocumentDescription,
+  updateDocumentDescription,
 };

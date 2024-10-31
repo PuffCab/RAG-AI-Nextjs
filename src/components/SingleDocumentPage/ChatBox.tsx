@@ -45,9 +45,9 @@ function ChatBox({ docId }: ComponentProps) {
               key={chatDocument._id}
               className={cn(
                 {
-                  "bg-gray-100 text-black": chatDocument.isUser,
-                  "bg-slate-800": !chatDocument.isUser,
-                  "text-right": chatDocument.isUser,
+                  "bg-gray-100 text-black w-11/12 place-self-end text-right":
+                    chatDocument.isUser,
+                  "bg-slate-800 w-11/12": !chatDocument.isUser,
                 },
                 "rounded p-2 whitespace-pre-line"
               )}
