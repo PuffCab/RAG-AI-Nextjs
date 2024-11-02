@@ -18,16 +18,16 @@ function Header() {
               width={50}
               height={50}
             />
-            <div>Documents Analyser</div>
+            <div className="hover:text-amber-200">Documents Analyser</div>
           </Link>
           <nav>
-            <Link href="/" className="hover:text-amber-200">
+            <Link href="/options-menu" className="hover:text-amber-200">
               Documents
             </Link>
           </nav>
         </div>
 
-        <div className="flex gap-6 items-center">
+        <div className="flex g ap-6 items-center">
           <ModeToggle />
           <HeaderActions />
         </div>

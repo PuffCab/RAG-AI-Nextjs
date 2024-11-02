@@ -1,7 +1,4 @@
 "use client";
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,24 +11,19 @@ import NewDocForm from "./NewDocForm";
 import { useState } from "react";
 import { Upload } from "lucide-react";
 import { buttonStyle, iconButtonStyle } from "@/styles/customStyles";
+import { Button } from "./ui/button";
 
 function UploadDocButton() {
   //   const createDocument = useMutation(api.documents.createDocument); //moved to form
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        {" "}
+      <DialogTrigger asChild>
         {/* NOTE using button inside dialogTrigger , triggers error of button nested inside button, and using "asChild" as property for DIalogTrigger, triggers another error of cannot render child inside child */}
-        <span
-          //   onClick={() => {
-          //     createDocument({ title: "My first document" });
-          //   }}
-          className={buttonStyle}
-        >
+        <Button className={buttonStyle}>
           <Upload className={iconButtonStyle} />
-          Open Form to add DOc
-        </span>
+          Document Upload
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
