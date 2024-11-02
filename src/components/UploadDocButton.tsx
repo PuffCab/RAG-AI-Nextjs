@@ -13,6 +13,7 @@ import {
 import NewDocForm from "./NewDocForm";
 import { useState } from "react";
 import { Upload } from "lucide-react";
+import { buttonStyle, iconButtonStyle } from "@/styles/customStyles";
 
 function UploadDocButton() {
   //   const createDocument = useMutation(api.documents.createDocument); //moved to form
@@ -26,9 +27,9 @@ function UploadDocButton() {
           //   onClick={() => {
           //     createDocument({ title: "My first document" });
           //   }}
-          className="flex items-center gap-1"
+          className={buttonStyle}
         >
-          <Upload className="w-4 h-4" />
+          <Upload className={iconButtonStyle} />
           Open Form to add DOc
         </span>
       </DialogTrigger>

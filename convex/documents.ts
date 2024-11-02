@@ -233,6 +233,26 @@ const sendQuestion = action({
     return aiAnswer;
   },
 });
+
+const deleteDocument = mutation({
+  args: {
+    docId: v.id("documents"),
+  },
+  async handler(ctx, args) {
+    const accessDocumentObject = await getDocumentObjectIfAuthorized(
+      ctx,
+      args.docId
+    );
+
+    if (!accessDocumentObject) {
+      throw new ConvexError("You don't have access to this document");
+    }
+    //first delete the actual file from storage (Files section in convex)
+    await ctx.storage.delete(accessDocumentObject.document.storageId);
+    //second delete the reference (from Data section)
+    await ctx.db.delete(args.docId);
+  },
+});
 export {
   createDocument,
   getDocuments,
@@ -243,4 +263,5 @@ export {
   invokeDocumentAccessQuery,
   generateDocumentDescription,
   updateDocumentDescription,
+  deleteDocument,
 };
