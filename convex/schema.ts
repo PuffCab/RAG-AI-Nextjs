@@ -15,4 +15,8 @@ export default defineSchema({
     text: v.string(),
     isUser: v.boolean(),
   }).index("by_chatId_tokenIdentifier", ["chatId", "tokenIdentifier"]),
+  notes: defineTable({
+    text: v.string(),
+    tokenIdentifier: v.string(),
+  }).index("by_tokenIdentifier", ["tokenIdentifier"]),
 });

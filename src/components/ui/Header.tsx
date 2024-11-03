@@ -27,7 +27,7 @@ function Header() {
           </nav>
         </div>
 
-        <div className="flex g ap-6 items-center">
+        <div className="flex gap-6 items-center">
           <ModeToggle />
           <HeaderActions />
         </div>
