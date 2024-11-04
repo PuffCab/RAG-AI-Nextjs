@@ -6,7 +6,11 @@ import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 
 function NotesPage() {
-  return <div>Please Select a Note</div>;
+  return (
+    <div className="text-xl font-bold  bg-slate-700 p-4 rounded w-full">
+      Please Select a Note
+    </div>
+  );
 }
 
 export default NotesPage;

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type NotesLayoutProps = {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ type NotesLayoutProps = {
 function NotesLayout({ children }: NotesLayoutProps) {
   const { noteId } = useParams<{ noteId: Id<"notes"> }>();
   const notes = useQuery(api.notes.getNotes);
-
+  const hasNotes = notes && notes.length > 0 ? true : false;
   return (
     <>
       <Unauthenticated>
@@ -29,31 +30,45 @@ function NotesLayout({ children }: NotesLayoutProps) {
 
           <UploadNoteButton />
         </div>
-        <div className="flex gap-10">
-          <ul className="space-y-2 w-[300px]">
-            {notes?.map((note) => {
-              return (
-                // <li
-                //   key={note._id}
-                //   className={cn("text-lg hover:text-amber-100", {
-                //     "text-amber-300": note._id === noteId,
-                //   })}
-                // >
-                <li
-                  key={note._id}
-                  className={cn("text-base hover:text-amber-100", {
-                    "bg-slate-700 p-4 rounded": note._id === noteId,
-                  })}
-                >
-                  <Link href={`/options-menu/notes/${note._id}`}>
-                    {note.text.substring(0, 30) + "..."}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="bg-slate-700 p-4 rounded w-full">{children}</div>
-        </div>
+        {!notes && (
+          <div className=" flex flex-col items-center gap-4 py-16">
+            <Image
+              src={"/files.svg"}
+              alt="picture representing several text files "
+              width={300}
+              height={300}
+            />
+            <h2 className="text-2xl font-bold">No Notes yet</h2>
+            <UploadNoteButton />
+          </div>
+        )}
+        {hasNotes && (
+          <div className="flex gap-10">
+            <ul className="space-y-2 w-[300px]">
+              {notes?.map((note) => {
+                return (
+                  // <li
+                  //   key={note._id}
+                  //   className={cn("text-lg hover:text-amber-100", {
+                  //     "text-amber-300": note._id === noteId,
+                  //   })}
+                  // >
+                  <li
+                    key={note._id}
+                    className={cn("text-base hover:text-amber-100", {
+                      "bg-slate-700 p-4 rounded": note._id === noteId,
+                    })}
+                  >
+                    <Link href={`/options-menu/notes/${note._id}`}>
+                      {note.text.substring(0, 30) + "..."}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="w-full">{children}</div>
+          </div>
+        )}
       </main>
     </>
   );

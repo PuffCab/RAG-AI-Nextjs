@@ -54,5 +54,27 @@ const createNote = mutation({
     return note;
   },
 });
+const deleteNote = mutation({
+  args: {
+    noteId: v.id("notes"),
+  },
+  async handler(ctx, args) {
+    const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
 
-export { createNote, getNotes, getSingleNote };
+    if (!userId) {
+      throw new ConvexError("You need to login to create a note");
+    }
+
+    const note = await ctx.db.get(args.noteId);
+
+    if (!note) {
+      throw new ConvexError("Cannot find the note");
+    }
+    if (note.tokenIdentifier !== userId) {
+      throw new ConvexError("You cannot delete this note");
+    }
+    await ctx.db.delete(args.noteId);
+  },
+});
+
+export { createNote, getNotes, getSingleNote, deleteNote };
