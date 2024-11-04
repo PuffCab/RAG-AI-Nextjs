@@ -27,9 +27,9 @@ function UploadDocButton() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a new Document to the DB</DialogTitle>
+          <DialogTitle>Add a new text file to the DB</DialogTitle>
           <DialogDescription>
-            Upload document with new information as source of information
+            Upload a .txt file with information you want to check later
           </DialogDescription>
           {/* <NewDocForm onUpload={() => setIsOpen(false)} /> */}
           <NewDocForm setIsOpen={setIsOpen} />

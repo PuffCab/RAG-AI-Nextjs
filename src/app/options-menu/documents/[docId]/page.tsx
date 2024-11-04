@@ -17,7 +17,7 @@ type ComponentProps = {
   };
 };
 
-function SingleDoc({ params: { docId } }: ComponentProps) {
+function SingleDocPage({ params: { docId } }: ComponentProps) {
   console.log("docId", docId);
   const document = useQuery(api.documents.getSingleDocument, { docId: docId });
   // const document = undefined;
@@ -80,4 +80,4 @@ function SingleDoc({ params: { docId } }: ComponentProps) {
   );
 }
 
-export default SingleDoc;
+export default SingleDocPage;

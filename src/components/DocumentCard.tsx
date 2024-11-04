@@ -32,7 +32,7 @@ function DocumentCard({ document }: PropsType) {
         )}
       </CardContent>
       <CardFooter>
-        <Link href={`/documents/${document._id}`}>
+        <Link href={`/options-menu/documents/${document._id}`}>
           <Button variant={"secondary"} className="flex items-center gap-1">
             <Eye className="w-4 h-4" />
             Show Doc

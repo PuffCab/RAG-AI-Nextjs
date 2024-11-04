@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { cn } from "@/lib/utils";
 import Header from "@/components/ui/Header";
 import { Toaster } from "@/components/ui/toaster";
+import { FileSearch2 } from "lucide-react";
 
 // const inter = Inter({ subsets: ["latin"] });
 const fontSans = FontSans({
@@ -30,6 +31,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <link rel="icon" href="/file-search-2.svg" sizes="any" />
         <Providers>
           <Header />
           {children}
