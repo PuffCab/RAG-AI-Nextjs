@@ -30,6 +30,7 @@ function NotesLayout({ children }: NotesLayoutProps) {
 
           <UploadNoteButton />
         </div>
+        {/* //TODO create skeleton for notes */}
         {!notes && (
           <div className=" flex flex-col items-center gap-4 py-16">
             <Image

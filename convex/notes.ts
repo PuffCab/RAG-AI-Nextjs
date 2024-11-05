@@ -1,5 +1,16 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import {
+  internalAction,
+  internalMutation,
+  mutation,
+  query,
+} from "./_generated/server";
+import OpenAI from "openai";
+import { internal } from "./_generated/api";
+
+const openAi = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 const getNotes = query({
   async handler(ctx) {
@@ -36,6 +47,39 @@ const getSingleNote = query({
   },
 });
 
+const embed = async (text: string) => {
+  const embedding = await openAi.embeddings.create({
+    model: "text-embedding-ada-002",
+    // dimensions: 1536, //including this property triggers a convex error. The dimension defaults to that one anyway
+    input: text,
+  });
+  return embedding.data[0].embedding;
+};
+
+const setNoteEmbedding = internalMutation({
+  args: {
+    noteId: v.id("notes"),
+    embedding: v.array(v.number()),
+  },
+  async handler(ctx, args) {
+    await ctx.db.patch(args.noteId, {
+      embedding: args.embedding,
+    });
+  },
+});
+const createNoteEmbedding = internalAction({
+  args: {
+    noteId: v.id("notes"),
+    text: v.string(),
+  },
+  async handler(ctx, args) {
+    const embedding = await embed(args.text);
+    await ctx.runMutation(internal.notes.setNoteEmbedding, {
+      noteId: args.noteId,
+      embedding,
+    });
+  },
+});
 const createNote = mutation({
   args: {
     text: v.string(),
@@ -47,11 +91,15 @@ const createNote = mutation({
       throw new ConvexError("You need to login to create a note");
     }
 
-    const note = await ctx.db.insert("notes", {
+    const noteId = await ctx.db.insert("notes", {
       text: args.text,
       tokenIdentifier: userId,
     });
-    return note;
+
+    await ctx.scheduler.runAfter(0, internal.notes.createNoteEmbedding, {
+      text: args.text,
+      noteId,
+    });
   },
 });
 const deleteNote = mutation({
@@ -77,4 +125,11 @@ const deleteNote = mutation({
   },
 });
 
-export { createNote, getNotes, getSingleNote, deleteNote };
+export {
+  createNote,
+  createNoteEmbedding,
+  getNotes,
+  getSingleNote,
+  deleteNote,
+  setNoteEmbedding,
+};

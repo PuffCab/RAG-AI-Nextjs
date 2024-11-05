@@ -19,8 +19,8 @@ function SingleNotePage() {
   return (
     <div className="relative bg-slate-700 p-4 rounded w-full">
       <DeleteNoteButton noteId={noteId} />
-      {/* //TODO create a update note feature */}
-      <div className="pr-3">{note?.text}</div>
+      {/* //TODO create an update note feature */}
+      <div className="pr-3 whitespace-pre-line">{note?.text}</div>
     </div>
   );
 }
