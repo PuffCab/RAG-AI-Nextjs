@@ -52,13 +52,13 @@ function DeleteDocumentButton({ docId }: ComponentParams) {
             <ButtonWithLoader
               isLoading={isLoading}
               loadingText="Deleting..."
-              onClick={() => {
+              clickEvent={() => {
                 setIsLoading(true);
                 deleteDocument({
                   docId,
                 })
                   .then(() => {
-                    router.push("/");
+                    router.push("/options-menu/documents");
                   })
                   .finally(() => {
                     setIsLoading(false);

@@ -6,14 +6,16 @@ type ComponentProps = {
   isLoading: boolean;
   children: ReactNode;
   loadingText: string;
-  onClick?: (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => void;
+  clickEvent?: (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => void;
 };
 
 function ButtonWithLoader({
   isLoading,
   children,
   loadingText,
-  onClick,
+  clickEvent,
 }: ComponentProps) {
   return (
     <Button
@@ -21,7 +23,7 @@ function ButtonWithLoader({
       type="submit"
       disabled={isLoading}
       onClick={(e) => {
-        onClick?.(e);
+        clickEvent?.(e);
       }}
     >
       {isLoading && <Loader className="animate-spin" />}

@@ -132,4 +132,5 @@ export {
   getSingleNote,
   deleteNote,
   setNoteEmbedding,
+  embed,
 };

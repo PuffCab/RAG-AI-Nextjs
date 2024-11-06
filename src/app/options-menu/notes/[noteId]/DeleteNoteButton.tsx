@@ -53,7 +53,7 @@ function DeleteNoteButton({ noteId }: ComponentParams) {
             <ButtonWithLoader
               isLoading={isLoading}
               loadingText="Deleting..."
-              onClick={() => {
+              clickEvent={() => {
                 setIsLoading(true);
                 deleteNote({
                   noteId,

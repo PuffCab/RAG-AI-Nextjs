@@ -1,6 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Files, NotebookPen, Settings } from "lucide-react";
+import { FileSearch, Files, NotebookPen, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -10,6 +10,21 @@ function MenuBar() {
   return (
     <nav>
       <ul className="space-y-5">
+        <li>
+          <Link
+            className={cn(
+              "flex gap-1 items-center text-xl hover:text-amber-100 font-light",
+              {
+                "text-amber-400 font-light":
+                  pathName.endsWith("/document-search"),
+              }
+            )}
+            href="/options-menu/document-search"
+          >
+            <FileSearch />
+            Search
+          </Link>
+        </li>
         <li>
           <Link
             className={cn(
