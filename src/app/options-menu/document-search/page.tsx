@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import SearchForm from "./SearchForm";
-import { Doc } from "../../../../convex/_generated/dataModel";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 
@@ -14,14 +13,14 @@ function DocumentSearchPage() {
         <h1 className="text-4xl font-bold">Document Search</h1>
       </div>
       <SearchForm setDocsAndNotes={setDocsAndNotes} />
-      <u className="space-y-4">
+      <ul className="space-y-4">
         {docsAndNotes?.map((docOrNote) => {
           if (docOrNote.type === "notes") {
             return (
               <Link href={`/options-menu/notes/${docOrNote.record._id}`}>
                 <li className="bg-slate-600 rounded p-4 whitespace-pre-line">
                   type: Note
-                  {docOrNote.record.text.substring(0, 20) + "..."}
+                  <p>{docOrNote.record.text.substring(0, 100) + "..."}</p>
                 </li>
               </Link>
             );
@@ -37,7 +36,7 @@ function DocumentSearchPage() {
             );
           }
         })}
-      </u>
+      </ul>
     </main>
   );
 }

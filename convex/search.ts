@@ -48,9 +48,14 @@ const searchAction = action({
     // 1. Generate an embedding from you favorite third party API:
     const embedding = await embed(args.search);
     // 2. Then search for similar foods!
-    const results = await ctx.vectorSearch("notes", "by_embedding", {
+    const notesArray = await ctx.vectorSearch("notes", "by_embedding", {
       vector: embedding,
-      limit: 16,
+      limit: 4,
+      filter: (q) => q.eq("tokenIdentifier", userId),
+    });
+    const docsArray = await ctx.vectorSearch("documents", "by_embedding", {
+      vector: embedding,
+      limit: 4,
       filter: (q) => q.eq("tokenIdentifier", userId),
     });
 
@@ -59,7 +64,7 @@ const searchAction = action({
       | { type: "documents"; record: Doc<"documents"> }
     )[] = [];
     await Promise.all(
-      results
+      notesArray
         .map(async (result) => {
           const note = await ctx.runQuery(api.notes.getSingleNote, {
             noteId: result._id,
@@ -68,6 +73,20 @@ const searchAction = action({
             return;
           }
           records.push({ record: note, type: "notes" });
+          return;
+        })
+        .filter(Boolean)
+    );
+    await Promise.all(
+      docsArray
+        .map(async (result) => {
+          const document = await ctx.runQuery(api.documents.getSingleDocument, {
+            docId: result._id,
+          });
+          if (!document) {
+            return;
+          }
+          records.push({ record: document, type: "documents" });
           return;
         })
         .filter(Boolean)
