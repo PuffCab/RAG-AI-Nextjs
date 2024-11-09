@@ -13,22 +13,28 @@ function DocumentSearchPage() {
         <h1 className="text-4xl font-bold">Document Search</h1>
       </div>
       <SearchForm setDocsAndNotes={setDocsAndNotes} />
-      <ul className="space-y-4">
+      <ul className="flex flex-col gap-2">
         {docsAndNotes?.map((docOrNote) => {
           if (docOrNote.type === "notes") {
             return (
-              <Link href={`/options-menu/notes/${docOrNote.record._id}`}>
-                <li className="bg-slate-600 rounded p-4 whitespace-pre-line">
-                  type: Note
-                  <p>{docOrNote.record.text.substring(0, 100) + "..."}</p>
+              <Link
+                href={`/options-menu/notes/${docOrNote.record._id}`}
+                key={docOrNote.record._id}
+              >
+                <li className="hover:bg-slate-700 bg-slate-600 rounded p-4 whitespace-pre-line">
+                  type: Note - Accuracy: {docOrNote.accuracy}
+                  {docOrNote.record.text.substring(0, 100) + "..."}
                 </li>
               </Link>
             );
           } else {
             return (
-              <Link href={`/options-menu/documents/${docOrNote.record._id}`}>
-                <li className="bg-slate-600 rounded p-4 whitespace-pre-line">
-                  type: Document
+              <Link
+                href={`/options-menu/documents/${docOrNote.record._id}`}
+                key={docOrNote.record._id}
+              >
+                <li className="hover:bg-slate-700 bg-slate-600 rounded p-4 whitespace-pre-line">
+                  type: Document - Accuracy: {docOrNote.accuracy}
                   {docOrNote.record.title}
                   {docOrNote.record.description}
                 </li>

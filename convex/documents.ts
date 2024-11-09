@@ -14,7 +14,7 @@ import OpenAI from "openai";
 import { Id } from "./_generated/dataModel";
 import { embed } from "./notes";
 
-const client = new OpenAI({
+const openAi = new OpenAI({
   // apiKey: process.env["OPENAI_API_KEY"], // This is the default and can be omitted
   apiKey: process.env.OPENAI_API_KEY, // this is the name given by us to the env in convex dashboard.
 });
@@ -137,7 +137,7 @@ const generateDocumentDescription = internalAction({
     //get the text from the file
     const documentText = await file.text();
     const chatCompletion: OpenAI.Chat.Completions.ChatCompletion =
-      await client.chat.completions.create({
+      await openAi.chat.completions.create({
         messages: [
           { role: "system", content: `This is a text file: ${documentText}` },
           {
@@ -157,7 +157,7 @@ const generateDocumentDescription = internalAction({
       chatCompletion.choices[0].message.content ??
       "problems generating document's description";
 
-    const embedding = embed(aiAnswer);
+    const embedding = await embed(aiAnswer);
     //update the current document Id (we create updateDocumentDescription)
     await ctx.runMutation(internal.documents.updateDocumentDescription, {
       docId: args.docId,
@@ -203,7 +203,7 @@ const sendQuestion = action({
     }
     const documentText = await file.text();
     const chatCompletion: OpenAI.Chat.Completions.ChatCompletion =
-      await client.chat.completions.create({
+      await openAi.chat.completions.create({
         messages: [
           { role: "system", content: `This is a text file: ${documentText}` },
           {

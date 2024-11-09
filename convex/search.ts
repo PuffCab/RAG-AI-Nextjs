@@ -60,8 +60,8 @@ const searchAction = action({
     });
 
     const records: (
-      | { type: "notes"; record: Doc<"notes"> }
-      | { type: "documents"; record: Doc<"documents"> }
+      | { type: "notes"; record: Doc<"notes">; accuracy: number }
+      | { type: "documents"; record: Doc<"documents">; accuracy: number }
     )[] = [];
     await Promise.all(
       notesArray
@@ -72,7 +72,11 @@ const searchAction = action({
           if (!note) {
             return;
           }
-          records.push({ record: note, type: "notes" });
+          records.push({
+            record: note,
+            type: "notes",
+            accuracy: result._score,
+          });
           return;
         })
         .filter(Boolean)
@@ -86,11 +90,19 @@ const searchAction = action({
           if (!document) {
             return;
           }
-          records.push({ record: document, type: "documents" });
+          records.push({
+            record: document,
+            type: "documents",
+            accuracy: result._score,
+          });
           return;
         })
         .filter(Boolean)
     );
+    //sort in descending order
+    records.sort((a, b) => {
+      return b.accuracy - a.accuracy;
+    });
     return records;
   },
 });
