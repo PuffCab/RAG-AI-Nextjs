@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchForm from "./SearchForm";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
@@ -8,6 +8,13 @@ import { Authenticated, Unauthenticated } from "convex/react";
 function DocumentSearchPage() {
   const [docsAndNotes, setDocsAndNotes] =
     useState<typeof api.search.searchAction._returnType>(null);
+
+  useEffect(() => {
+    const localStorageData = localStorage.getItem("queryResults");
+    if (!localStorageData) return;
+    setDocsAndNotes(JSON.parse(localStorageData));
+  }, []);
+
   return (
     <main className="w-full space-y-8">
       <Unauthenticated>
@@ -17,7 +24,12 @@ function DocumentSearchPage() {
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold">Document Search</h1>
         </div>
-        <SearchForm setDocsAndNotes={setDocsAndNotes} />
+        <SearchForm
+          setDocsAndNotes={(queryResults) => {
+            setDocsAndNotes(queryResults);
+            localStorage.setItem("queryResults", JSON.stringify(queryResults));
+          }}
+        />
         <ul className="flex flex-col gap-2">
           {docsAndNotes?.map((docOrNote) => {
             if (docOrNote.type === "notes") {
