@@ -4,6 +4,7 @@ import SearchForm from "./SearchForm";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 import { Authenticated, Unauthenticated } from "convex/react";
+import DocOrNoteCard from "./DocOrNoteCard";
 
 function DocumentSearchPage() {
   const [docsAndNotes, setDocsAndNotes] =
@@ -16,7 +17,7 @@ function DocumentSearchPage() {
   }, []);
 
   return (
-    <main className="w-full space-y-8">
+    <main className="w-full space-y-8 pb-20">
       <Unauthenticated>
         <h1>Loggin first to do a search</h1>
       </Unauthenticated>
@@ -34,28 +35,23 @@ function DocumentSearchPage() {
           {docsAndNotes?.map((docOrNote) => {
             if (docOrNote.type === "notes") {
               return (
-                <Link
-                  href={`/options-menu/notes/${docOrNote.record._id}`}
+                <DocOrNoteCard
                   key={docOrNote.record._id}
-                >
-                  <li className="hover:bg-slate-700 bg-slate-600 rounded p-4 whitespace-pre-line">
-                    type: Note - Accuracy: {docOrNote.accuracy}
-                    {docOrNote.record.text.substring(0, 100) + "..."}
-                  </li>
-                </Link>
+                  type="note"
+                  urlPath={`/options-menu/notes/${docOrNote.record._id}`}
+                  accuracy={docOrNote.accuracy}
+                  text={docOrNote.record.text}
+                />
               );
             } else {
               return (
-                <Link
-                  href={`/options-menu/documents/${docOrNote.record._id}`}
+                <DocOrNoteCard
                   key={docOrNote.record._id}
-                >
-                  <li className="hover:bg-slate-700 bg-slate-600 rounded p-4 whitespace-pre-line">
-                    type: Document - Accuracy: {docOrNote.accuracy}
-                    {docOrNote.record.title}
-                    {docOrNote.record.description}
-                  </li>
-                </Link>
+                  type="document"
+                  urlPath={`/options-menu/notes/${docOrNote.record._id}`}
+                  accuracy={docOrNote.accuracy}
+                  text={`${docOrNote.record.title}: ${docOrNote.record.description}`}
+                />
               );
             }
           })}

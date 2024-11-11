@@ -24,7 +24,7 @@ function SingleDocPage({ params: { docId } }: ComponentProps) {
   // NOTE fix the change the initial render of the !document case because of the response time. Use spinner or loader
   //NOTE also include error handling for when the docID is incorrect and the query throws an error
   return (
-    <main className="p-24 space-y-8">
+    <main className="space-y-8 w-full">
       {!document && (
         <div className="space-y-6">
           <div>
