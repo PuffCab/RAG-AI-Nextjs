@@ -43,7 +43,7 @@ export default function Home() {
                     key={i}
                     className="h-[200px] p-4 flex flex-col justify-between"
                   >
-                    <Skeleton className="h-[30px] rounded" />
+                    <Skeleton className="h-[30px] rounded animate-pulse" />
                     <Skeleton className="h-[30px] rounded" />
                     <Skeleton className="w-[80px] h-[30px] rounded" />
                   </Card>
