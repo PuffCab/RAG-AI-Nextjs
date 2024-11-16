@@ -45,20 +45,33 @@ const generateUploadUrl = mutation(async (ctx) => {
 });
 
 const getDocuments = query({
-  async handler(ctx) {
+  args: {
+    orgId: v.optional(v.string()),
+  },
+  async handler(ctx, args) {
     // return await ctx.db.query("documents").collect(); // we comment this line when we move on to query douments by user identifier
     const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
-    console.log("userId :>> ", userId);
+    // console.log("userId :>> ", userId);
     if (!userId) {
       // return [];
       return undefined; //to prevent showing the no documents place holder while loading
     }
-    return await ctx.db
-      .query("documents")
-      .withIndex("by_tokenIdentifier", (q) => {
-        return q.eq("tokenIdentifier", userId);
-      })
-      .collect();
+    if (args.orgId) {
+      return await ctx.db
+        .query("documents")
+        .withIndex("by_orgId", (q) => {
+          return q.eq("orgId", args.orgId);
+        })
+        .collect();
+    } else {
+      //else, we use tokenIdentifier
+      return await ctx.db
+        .query("documents")
+        .withIndex("by_tokenIdentifier", (q) => {
+          return q.eq("tokenIdentifier", userId);
+        })
+        .collect();
+    }
   },
 });
 

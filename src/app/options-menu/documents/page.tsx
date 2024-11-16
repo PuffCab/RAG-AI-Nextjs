@@ -1,16 +1,20 @@
 "use client";
 
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-
 import DocumentCard from "@/components/DocumentCard";
 import UploadDocButton from "@/components/UploadDocButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { api } from "../../../../convex/_generated/api";
+import { useOrganization } from "@clerk/nextjs";
 
-export default function Home() {
-  const documents = useQuery(api.documents.getDocuments);
+function Home() {
+  const organizationInfo = useOrganization();
+
+  const documents = useQuery(api.documents.getDocuments, {
+    orgId: organizationInfo.organization?.id,
+  });
   console.log("documents::", documents);
   // const createDocument = useMutation(api.documents.createDocument);
   // ...
@@ -77,3 +81,5 @@ export default function Home() {
     </>
   );
 }
+
+export default Home;
