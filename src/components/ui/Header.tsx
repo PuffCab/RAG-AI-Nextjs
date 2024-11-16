@@ -4,6 +4,7 @@ import { ModeToggle } from "./ModeToggle";
 import Image from "next/image";
 import { HeaderActions } from "@/app/actions";
 import Link from "next/link";
+import { OrganizationSwitcher } from "@clerk/nextjs";
 
 function Header() {
   return (
@@ -20,7 +21,8 @@ function Header() {
             />
             <div className="hover:text-amber-200">Documents Analyser</div>
           </Link>
-          <nav>
+          <nav className="flex items-center gap-7">
+            <OrganizationSwitcher />
             <Link href="/options-menu" className="hover:text-amber-200">
               Documents
             </Link>

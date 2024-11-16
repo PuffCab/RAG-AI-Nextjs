@@ -53,11 +53,16 @@ const searchAction = action({
       limit: 4,
       filter: (q) => q.eq("tokenIdentifier", userId),
     });
+    //? To serve only very close results
+    // const notesArrayFiltered = notesArray.filter((note) => note._score >= 0.8);
+
     const docsArray = await ctx.vectorSearch("documents", "by_embedding", {
       vector: embedding,
       limit: 4,
       filter: (q) => q.eq("tokenIdentifier", userId),
     });
+    //? To serve only very close results
+    // const docsArrayFiltered = docsArray.filter((doc) => doc._score >= 0.8);
 
     const records: (
       | { type: "notes"; record: Doc<"notes">; accuracy: number }
@@ -65,6 +70,7 @@ const searchAction = action({
     )[] = [];
     await Promise.all(
       notesArray
+        // notesArrayFiltered
         .map(async (result) => {
           const note = await ctx.runQuery(api.notes.getSingleNote, {
             noteId: result._id,
@@ -83,6 +89,7 @@ const searchAction = action({
     );
     await Promise.all(
       docsArray
+        // docsArrayFiltered
         .map(async (result) => {
           const document = await ctx.runQuery(api.documents.getSingleDocument, {
             docId: result._id,
