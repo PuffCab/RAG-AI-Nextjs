@@ -35,6 +35,8 @@ function DeleteNoteButton({ noteId }: ComponentParams) {
         <Button
           variant={"destructive"}
           className="absolute -top-0 -right-0 p-2"
+
+          // asChild
         >
           <Trash2 />
         </Button>

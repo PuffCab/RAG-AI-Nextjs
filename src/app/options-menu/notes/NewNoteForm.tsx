@@ -14,6 +14,7 @@ import { useMutation } from "convex/react";
 import ButtonWithLoader from "@/components/ButtonWithLoader";
 import { api } from "../../../../convex/_generated/api";
 import { Textarea } from "@/components/ui/textarea";
+import { useOrganization } from "@clerk/nextjs";
 
 type ComponentProps = {
   handleCloseOnCreateNote: () => void;
@@ -30,6 +31,7 @@ const formSchema = z.object({
 
 function NewNoteForm({ handleCloseOnCreateNote }: ComponentProps) {
   const createNote = useMutation(api.notes.createNote);
+  const organization = useOrganization();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,6 +43,7 @@ function NewNoteForm({ handleCloseOnCreateNote }: ComponentProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await createNote({
       text: values.text,
+      orgId: organization.organization?.id,
     });
 
     handleCloseOnCreateNote();

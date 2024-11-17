@@ -62,6 +62,7 @@ function Home() {
                 alt="picture representing several text files "
                 width={300}
                 height={300}
+                priority
               />
               <h2 className="text-2xl font-bold">No Documents yet</h2>
               <UploadDocButton />

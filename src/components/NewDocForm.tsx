@@ -17,6 +17,7 @@ import { api } from "../../convex/_generated/api";
 import { Loader } from "lucide-react";
 import ButtonWithLoader from "./ButtonWithLoader";
 import { Id } from "../../convex/_generated/dataModel";
+import { useOrganization } from "@clerk/nextjs";
 
 type ComponentProps = {
   setIsOpen: (a: boolean) => void;
@@ -33,6 +34,8 @@ const formSchema = z.object({
 });
 
 function NewDocForm({ setIsOpen }: ComponentProps) {
+  const organization = useOrganization();
+  console.log("organization", organization);
   const createDocument = useMutation(api.documents.createDocument);
   const generateUploadUrl = useMutation(api.documents.generateUploadUrl);
 
@@ -63,12 +66,18 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
         // new Promise((resolve) => setTimeout(resolve, 2000));
         // Do something with the form values.
         // ✅ This will be type-safe and validated.
-        console.log("values:::", values);
+        // console.log("values:::", values);
+        console.log(
+          "organization.organization?.id:::",
+          organization.organization?.id
+        );
         // await createDocument({ title: values.title });
+
         await createDocument({
           title: values.title,
           // storageId: storageId as string,
           storageId: storageId as Id<"_storage">,
+          orgId: organization.organization?.id,
         });
         setIsOpen(false);
       }

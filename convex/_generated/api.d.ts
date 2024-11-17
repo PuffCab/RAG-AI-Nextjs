@@ -19,7 +19,7 @@ import type * as clerk from "../clerk.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
 import type * as notes from "../notes.js";
-import type * as orgMembership from "../orgMembership.js";
+import type * as orgMemberships from "../orgMemberships.js";
 import type * as search from "../search.js";
 
 /**
@@ -36,7 +36,7 @@ declare const fullApi: ApiFromModules<{
   documents: typeof documents;
   http: typeof http;
   notes: typeof notes;
-  orgMembership: typeof orgMembership;
+  orgMemberships: typeof orgMemberships;
   search: typeof search;
 }>;
 export declare const api: FilterApi<

@@ -8,7 +8,7 @@ import { internalAction } from "./_generated/server";
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || ``;
 
-export const fulfill = internalAction({
+const fulfill = internalAction({
   args: { headers: v.any(), payload: v.string() },
   handler: async (ctx, args) => {
     const wh = new Webhook(webhookSecret);
@@ -16,3 +16,5 @@ export const fulfill = internalAction({
     return payload as WebhookEvent;
   },
 });
+
+export { fulfill };

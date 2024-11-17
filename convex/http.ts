@@ -25,13 +25,22 @@ http.route({
       });
 
       switch (result.type) {
+        case "organizationMembership.updated":
         case "organizationMembership.created":
           await ctx.runMutation(
-            internal.orgMembership.addUserIdToOrganization,
+            internal.orgMemberships.addUserIdToOrganization,
             {
-              tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+              userId: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
               orgId: result.data.organization.id,
-              role: result.data.role === "org:admin" ? "admin" : "member",
+            }
+          );
+          break;
+        case "organizationMembership.deleted":
+          await ctx.runMutation(
+            internal.orgMemberships.deleteUserIdFromOrganization,
+            {
+              userId: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+              orgId: result.data.organization.id,
             }
           );
           break;

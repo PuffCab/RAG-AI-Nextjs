@@ -24,7 +24,7 @@ function Header() {
           <nav className="flex items-center gap-7">
             <OrganizationSwitcher />
             <Link href="/options-menu" className="hover:text-amber-200">
-              Documents
+              Options Menu
             </Link>
           </nav>
         </div>

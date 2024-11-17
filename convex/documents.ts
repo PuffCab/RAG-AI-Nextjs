@@ -19,7 +19,7 @@ const openAi = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // this is the name given by us to the env in convex dashboard.
 });
 
-const getDocumentObjectIfAuthorized = async (
+const verifyAccessToDocument = async (
   ctx: MutationCtx | QueryCtx,
   docId: Id<"documents">
 ) => {
@@ -34,12 +34,41 @@ const getDocumentObjectIfAuthorized = async (
   if (!document) {
     return null;
   }
-  if (document.tokenIdentifier !== userId) {
-    return null;
+
+  if (document.orgId) {
+    const isUserInOrganization = await verifyUserOrgAccess(ctx, document.orgId);
+    if (!isUserInOrganization) {
+      return null;
+    }
+  } else {
+    if (document.tokenIdentifier !== userId) {
+      return null;
+    }
   }
+
   return { document, userId };
 };
 
+//TODO move this function to a helper/utils file inside this folder??
+const verifyUserOrgAccess = async (
+  ctx: MutationCtx | QueryCtx,
+  orgId: string
+) => {
+  const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
+
+  if (!userId) {
+    return null;
+  }
+
+  const orgMembership = await ctx.db
+    .query("orgMemberships")
+    .withIndex("by_orgId_userId", (q) =>
+      q.eq("orgId", orgId).eq("userId", userId)
+    )
+    .first();
+
+  return orgMembership ? true : false;
+};
 const generateUploadUrl = mutation(async (ctx) => {
   return await ctx.storage.generateUploadUrl();
 });
@@ -57,6 +86,11 @@ const getDocuments = query({
       return undefined; //to prevent showing the no documents place holder while loading
     }
     if (args.orgId) {
+      const isUserInOrganization = await verifyUserOrgAccess(ctx, args.orgId);
+
+      if (!isUserInOrganization) {
+        return undefined;
+      }
       return await ctx.db
         .query("documents")
         .withIndex("by_orgId", (q) => {
@@ -81,10 +115,7 @@ const getSingleDocument = query({
   },
   async handler(ctx, args) {
     //make sure user is logged in
-    const accessDocumentObject = await getDocumentObjectIfAuthorized(
-      ctx,
-      args.docId
-    );
+    const accessDocumentObject = await verifyAccessToDocument(ctx, args.docId);
 
     if (!accessDocumentObject) {
       return null;
@@ -102,6 +133,7 @@ const createDocument = mutation({
   args: {
     title: v.string(),
     storageId: v.id("_storage"),
+    orgId: v.optional(v.string()),
   },
   async handler(ctx, args) {
     // const userId = (await ctx.auth.getUserIdentity())?.tokenIdentifier;
@@ -111,6 +143,16 @@ const createDocument = mutation({
     if (!userId) {
       throw new ConvexError("Not logged in");
     }
+
+    if (args.orgId) {
+      const isUserInOrganization = await verifyUserOrgAccess(ctx, args.orgId);
+      if (!isUserInOrganization) {
+        throw new ConvexError(
+          "You are not allowed to upload documents to this organization"
+        );
+      }
+    }
+
     //we name this below documentId, to use it in the scheduler.
     const documentId = await ctx.db.insert("documents", {
       title: args.title,
@@ -278,9 +320,10 @@ export {
   generateUploadUrl,
   getSingleDocument,
   sendQuestion,
-  getDocumentObjectIfAuthorized,
+  verifyAccessToDocument,
   invokeDocumentAccessQuery,
   generateDocumentDescription,
   updateDocumentDescription,
   deleteDocument,
+  verifyUserOrgAccess,
 };

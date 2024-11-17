@@ -9,14 +9,19 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useOrganization } from "@clerk/nextjs";
 
 type NotesLayoutProps = {
   children: React.ReactNode;
 };
 
 function NotesLayout({ children }: NotesLayoutProps) {
+  const organization = useOrganization();
+
   const { noteId } = useParams<{ noteId: Id<"notes"> }>();
-  const notes = useQuery(api.notes.getNotes);
+  const notes = useQuery(api.notes.getNotes, {
+    orgId: organization.organization?.id,
+  });
   const hasNotes = notes && notes.length > 0 ? true : false;
   return (
     <>
