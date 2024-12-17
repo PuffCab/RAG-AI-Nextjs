@@ -143,7 +143,7 @@ const createDocument = mutation({
     if (!userId) {
       throw new ConvexError("Not logged in");
     }
-
+    let documentId: Id<"documents">;
     if (args.orgId) {
       const isUserInOrganization = await verifyUserOrgAccess(ctx, args.orgId);
       if (!isUserInOrganization) {
@@ -151,15 +151,22 @@ const createDocument = mutation({
           "You are not allowed to upload documents to this organization"
         );
       }
+      //we name this below documentId, to use it in the scheduler.
+      documentId = await ctx.db.insert("documents", {
+        title: args.title,
+        orgId: args.orgId,
+        storageId: args.storageId,
+        description: "",
+      });
+    } else {
+      //we name this below documentId, to use it in the scheduler.
+      documentId = await ctx.db.insert("documents", {
+        title: args.title,
+        tokenIdentifier: userId,
+        storageId: args.storageId,
+        description: "",
+      });
     }
-
-    //we name this below documentId, to use it in the scheduler.
-    const documentId = await ctx.db.insert("documents", {
-      title: args.title,
-      tokenIdentifier: userId,
-      storageId: args.storageId,
-      description: "",
-    });
 
     //we run the internal operations to generate description. using scheduler (we could use just runQuery  or similars), which access like a queing system that runs several mutations, etc..
     await ctx.scheduler.runAfter(
@@ -175,7 +182,7 @@ const invokeDocumentAccessQuery = internalQuery({
     docId: v.id("documents"),
   },
   async handler(ctx, args) {
-    return await getDocumentObjectIfAuthorized(ctx, args.docId);
+    return await verifyAccessToDocument(ctx, args.docId);
   },
 });
 
@@ -300,10 +307,7 @@ const deleteDocument = mutation({
     docId: v.id("documents"),
   },
   async handler(ctx, args) {
-    const accessDocumentObject = await getDocumentObjectIfAuthorized(
-      ctx,
-      args.docId
-    );
+    const accessDocumentObject = await verifyAccessToDocument(ctx, args.docId);
 
     if (!accessDocumentObject) {
       throw new ConvexError("You don't have access to this document");

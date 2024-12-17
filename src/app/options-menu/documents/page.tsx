@@ -15,7 +15,7 @@ function Home() {
   const documents = useQuery(api.documents.getDocuments, {
     orgId: organizationInfo.organization?.id,
   });
-  console.log("documents::", documents);
+  // console.log("documents::", documents);
   // const createDocument = useMutation(api.documents.createDocument);
   // ...
 
