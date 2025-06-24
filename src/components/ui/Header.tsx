@@ -5,6 +5,7 @@ import Image from "next/image";
 import { HeaderActions } from "@/app/actions";
 import Link from "next/link";
 import { OrganizationSwitcher } from "@clerk/nextjs";
+import { headerIconBlurImage } from "@/constants/imagePlaceholders";
 
 function Header() {
   return (
@@ -14,12 +15,14 @@ function Header() {
           <Link href="/" className="flex items-center gap-4 text-2xl">
             <Image
               className="rounded "
-              src="/homer-4.jpg"
+              src="https://res.cloudinary.com/dqrfxpzld/image/upload/v1750777708/doc_analyser/logo1_s6tq4f.png"
               alt="logo from homer "
               width={50}
               height={50}
+              placeholder="blur"
+              blurDataURL={headerIconBlurImage}
             />
-            <div className="hover:text-amber-200">Documents Analyser</div>
+            <div className="hover:text-amber-200">DocLens</div>
           </Link>
           <nav className="flex items-center gap-7">
             <OrganizationSwitcher />
@@ -27,7 +30,7 @@ function Header() {
               Home
             </Link>
             <Link href="/options-menu" className="hover:text-amber-200">
-              Options Menu
+              Menu
             </Link>
           </nav>
         </div>

@@ -1,20 +1,13 @@
 "use client";
-
-import { Authenticated, Unauthenticated, useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-
-import DocumentCard from "@/components/DocumentCard";
-import UploadDocButton from "@/components/UploadDocButton";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { landingPageBlurImage } from "@/constants/imagePlaceholders";
 
 export default function LandingPage() {
   const router = useRouter();
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-6 py-12">
+    <main className="bg-background text-foreground flex flex-col items-center justify-center px-6 py-12">
       <div className="max-w-2xl text-center space-y-6">
         <h1 className="text-5xl font-bold tracking-tight">
           AI-powered document search and analysis
@@ -29,13 +22,17 @@ export default function LandingPage() {
             Get Started
           </Button>
         </div>
-        <div className="pt-10">
+        {/* <div className="pt-10"> */}
+        <div className="w-full max-w-xl aspect-[2/1] relative">
           <Image
-            src="/files.jpeg"
+            src="https://res.cloudinary.com/dqrfxpzld/image/upload/v1750766906/doc_analyser/doc_app_image_xxpuhe.png"
             alt="Demo preview"
             width={600}
             height={300}
+            placeholder="blur"
+            blurDataURL={landingPageBlurImage}
             className="rounded-xl shadow-lg border border-border"
+            priority
           />
         </div>
       </div>
