@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/ui/Header";
 import { Toaster } from "@/components/ui/toaster";
 import { FileSearch2 } from "lucide-react";
+import { userAgent } from "next/server";
+import { headers } from "next/headers";
+import { checkIfMobile, isDesktop } from "./actions/serverActions";
 
 // const inter = Inter({ subsets: ["latin"] });
 const fontSans = FontSans({
@@ -17,11 +20,12 @@ export const metadata: Metadata = {
   description: "Analyse with AI documents uploaded by the user",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isMobile = await checkIfMobile();
   return (
     // NOTE we added suppressHydrationWarning because an error provoked by the colortheme with the header "app-index.js:33 Warning: Extra attributes from the server: class,style"
     <html lang="en" suppressHydrationWarning>
@@ -33,7 +37,7 @@ export default function RootLayout({
       >
         <link rel="icon" href="/file-search-2.svg" sizes="any" />
         <Providers>
-          <Header />
+          <Header isMobile={isMobile} />
           {children}
           <Toaster />
         </Providers>
