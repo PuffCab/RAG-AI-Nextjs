@@ -1,6 +1,7 @@
 "use client";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import { SignInButton, UserButton } from "@clerk/nextjs";
+import { Loader2 } from "lucide-react";
 //using clerk
 function HeaderActions() {
   return (
@@ -11,7 +12,9 @@ function HeaderActions() {
       <Authenticated>
         <UserButton />
       </Authenticated>
-      <AuthLoading>...Loading</AuthLoading>
+      <AuthLoading>
+        <Loader2 className="animate-spin" />
+      </AuthLoading>
     </>
   );
 }
