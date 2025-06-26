@@ -33,7 +33,9 @@ function Home() {
       <Authenticated>
         <main className="w-full space-y-8">
           <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-bold">Documents</h1>
+            {/* //TODO decide wich style fits better for text+upload button */}
+            {/* <div className="flex flex-row gap-2 items-start md:flex-row md:justify-between md:items-center"> */}
+            <h1 className="text-2xl md:text-4xl font-bold">Documents</h1>
             {documents && documents.length > 0 && <UploadDocButton />}
           </div>
 
@@ -75,7 +77,7 @@ function Home() {
           )}
 
           {documents && documents.length > 0 && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               {documents?.map((doc) => {
                 // return <div key={doc._id}>{doc.title}</div>;
                 return <DocumentCard document={doc} key={doc._id} />;
