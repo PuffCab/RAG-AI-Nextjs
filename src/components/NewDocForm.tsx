@@ -107,7 +107,7 @@ function NewDocForm({ setIsOpen }: ComponentProps) {
           name="file"
           render={({ field: { value, onChange, ...fieldProps } }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>File</FormLabel>
               <FormControl>
                 <Input
                   {...fieldProps}

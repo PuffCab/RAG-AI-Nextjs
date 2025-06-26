@@ -23,18 +23,24 @@ function NotesLayout({ children }: NotesLayoutProps) {
     orgId: organization.organization?.id,
   });
   const hasNotes = notes && notes.length > 0 ? true : false;
+
+  const explanationTextNotes =
+    "Write your notes and upload them to make them searchable.";
   return (
     <>
       <Unauthenticated>
-        <h1>Loggin first to see your Notes</h1>
+        <div className="bg-accent/20 text-accent-foreground p-4 rounded-md my-8 mx-auto max-w-xl text-center">
+          <h2 className="text-xl font-semibold mb-2">Welcome to DocLens</h2>
+          <p>Please log in to write, upload and view your text notes.</p>
+        </div>
       </Unauthenticated>
       <Authenticated>
         <main className="w-full space-y-8">
           <div className="flex justify-between items-center">
             <h1 className="text-4xl font-bold">Notes</h1>
-
-            <UploadNoteButton />
+            {notes && notes.length > 0 && <UploadNoteButton />}
           </div>
+          {/* //TODO create skeleton for notes */}
           {!notes && (
             <div className="flex gap-10">
               <div className="w-[200px] space-y-4">
@@ -48,8 +54,12 @@ function NotesLayout({ children }: NotesLayoutProps) {
               </div>
             </div>
           )}
-          {/* //TODO create skeleton for notes */}
-          {notes?.length === 0 && (
+          {notes && (
+            <div className="bg-accent/50 text-accent-foreground p-3 rounded-md">
+              <p>{explanationTextNotes}</p>
+            </div>
+          )}
+          {notes && notes.length === 0 && (
             <div className=" flex flex-col items-center gap-4 py-16">
               <Image
                 src={"/files.svg"}

@@ -8,7 +8,7 @@ export default function LandingPage() {
   const router = useRouter();
   return (
     <main className="bg-background text-foreground flex flex-col items-center justify-center px-6 py-12">
-      <div className="max-w-2xl text-center space-y-6">
+      <div className="max-w-2xl flex flex-col items-center text-center space-y-6">
         <h1 className="text-5xl font-bold tracking-tight">
           AI-powered document search and analysis
         </h1>

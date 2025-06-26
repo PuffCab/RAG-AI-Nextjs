@@ -19,24 +19,22 @@ function Home() {
   // const createDocument = useMutation(api.documents.createDocument);
   // ...
 
+  const explanationTextDocuments =
+    "Upload your .txt documents to make them searchable. PDFs and DOC/DOCX support is coming soon!";
+
   return (
     <>
       <Unauthenticated>
-        <h1>Loggin first to see your documents</h1>
+        <div className="bg-accent/20 text-accent-foreground p-4 rounded-md my-8 mx-auto max-w-xl text-center">
+          <h2 className="text-xl font-semibold mb-2">Welcome to DocLens</h2>
+          <p>Please log in to upload and view your documents.</p>
+        </div>
       </Unauthenticated>
       <Authenticated>
-        {/* <main className="flex min-h-screen flex-col items-center justify-between p-24"> */}
         <main className="w-full space-y-8">
           <div className="flex justify-between items-center">
             <h1 className="text-4xl font-bold">Documents</h1>
-            {/* <Button
-          onClick={() => {
-            createDocument({ title: "My first document" });
-          }}
-        >
-          Add doc to DB
-        </Button> */}
-            <UploadDocButton />
+            {documents && documents.length > 0 && <UploadDocButton />}
           </div>
 
           {!documents && (
@@ -55,6 +53,13 @@ function Home() {
               })}
             </div>
           )}
+
+          {documents && (
+            <div className="bg-accent/50 text-accent-foreground p-3 rounded-md">
+              <p>{explanationTextDocuments}</p>
+            </div>
+          )}
+
           {documents && documents.length === 0 && (
             <div className=" flex flex-col items-center gap-4 py-16">
               <Image
