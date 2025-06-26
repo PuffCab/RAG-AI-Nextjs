@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { FileSearch2 } from "lucide-react";
 import { userAgent } from "next/server";
 import { headers } from "next/headers";
-import { checkIfMobile, isDesktop } from "./actions/serverActions";
+import { checkIfMobile } from "./actions/serverActions";
 
 // const inter = Inter({ subsets: ["latin"] });
 const fontSans = FontSans({
