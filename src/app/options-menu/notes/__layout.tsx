@@ -1,3 +1,4 @@
+//TODO remove file once final style has been decided
 "use client";
 
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
@@ -10,6 +11,7 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization } from "@clerk/nextjs";
+import NoteCard from "./components/NoteCard";
 
 type NotesLayoutProps = {
   children: React.ReactNode;
@@ -76,22 +78,13 @@ function NotesLayout({ children }: NotesLayoutProps) {
               <ul className="space-y-2 w-[300px]">
                 {notes?.map((note) => {
                   return (
-                    // <li
-                    //   key={note._id}
-                    //   className={cn("text-lg hover:text-amber-100", {
-                    //     "text-amber-300": note._id === noteId,
-                    //   })}
-                    // >
-                    <li
+                    <NoteCard
                       key={note._id}
-                      className={cn("text-base hover:text-amber-100", {
-                        "bg-slate-700 p-4 rounded": note._id === noteId,
-                      })}
-                    >
-                      <Link href={`/options-menu/notes/${note._id}`}>
-                        {note.text.substring(0, 30) + "..."}
-                      </Link>
-                    </li>
+                      id={note._id}
+                      text={note.text}
+                      title={note.title}
+                      isSelected={note._id === noteId}
+                    />
                   );
                 })}
               </ul>

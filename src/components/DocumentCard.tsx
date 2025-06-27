@@ -19,7 +19,7 @@ function DocumentCard({ document }: PropsType) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{document.title}</CardTitle>
+        <CardTitle title={document.title}>{document.title}</CardTitle>
         {/* <CardDescription>no description yet</CardDescription> */}
       </CardHeader>
       <CardContent>

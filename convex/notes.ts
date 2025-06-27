@@ -115,6 +115,7 @@ const createNoteEmbedding = internalAction({
 const createNote = mutation({
   args: {
     text: v.string(),
+    title: v.string(),
     orgId: v.optional(v.string()),
   },
   async handler(ctx, args) {
@@ -136,9 +137,11 @@ const createNote = mutation({
       noteId = await ctx.db.insert("notes", {
         text: args.text,
         orgId: args.orgId,
+        title: args.title,
       });
     } else {
       noteId = await ctx.db.insert("notes", {
+        title: args.title,
         text: args.text,
         tokenIdentifier: userId,
       });
