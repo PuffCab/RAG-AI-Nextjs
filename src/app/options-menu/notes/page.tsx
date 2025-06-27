@@ -27,6 +27,7 @@ import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization } from "@clerk/nextjs";
 import NoteCard from "./components/NoteCard";
+import NoteCardSkeleton from "./components/NoteCardSkeleton";
 
 function NotesPage() {
   const organization = useOrganization();
@@ -55,17 +56,15 @@ function NotesPage() {
           </div>
           {/* //TODO create skeleton for notes */}
           {!notes && (
-            <div className="flex gap-10">
-              <div className="w-[200px] space-y-4">
-                <Skeleton className="h-[30px] w-full" />
-                <Skeleton className="h-[30px] w-full" />
-                <Skeleton className="h-[30px] w-full" />
-                <Skeleton className="h-[30px] w-full" />
-              </div>
-              <div className="flex-1">
-                <Skeleton className="h-[300px] w-full" />
-              </div>
-            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 space-y-2">
+              {new Array(6).fill("").map((_, i) => {
+                return (
+                  <li key={i}>
+                    <NoteCardSkeleton />
+                  </li>
+                );
+              })}
+            </ul>
           )}
           {notes && (
             <div className="bg-accent/50 text-accent-foreground p-3 rounded-md">
@@ -86,7 +85,7 @@ function NotesPage() {
           )}
           {hasNotes && (
             <>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 space-y-2 ">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 space-y-2">
                 {notes?.map((note) => {
                   return (
                     <NoteCard

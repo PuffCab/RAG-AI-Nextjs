@@ -34,7 +34,7 @@ export default function NoteCard({
         >
           {title}
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground line-clamp-2">
           {text.substring(0, 60) + "..."}
         </p>
       </Link>
