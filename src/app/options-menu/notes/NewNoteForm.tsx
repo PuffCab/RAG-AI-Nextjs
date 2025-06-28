@@ -21,6 +21,9 @@ type ComponentProps = {
 };
 
 const formSchema = z.object({
+  title: z.string().min(2, {
+    message: "Note must contain at least 2 characters",
+  }),
   text: z
     .string()
     .min(2, {
@@ -42,6 +45,7 @@ function NewNoteForm({ handleCloseOnCreateNote }: ComponentProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await createNote({
+      title: values.title,
       text: values.text,
       orgId: organization.organization?.id,
     });
@@ -54,13 +58,35 @@ function NewNoteForm({ handleCloseOnCreateNote }: ComponentProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="text"
+          name="title"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
                 {/* //!TODO add a counting characters feature */}
-                <Textarea placeholder="Text of your note" {...field} rows={9} />
+                <Textarea
+                  placeholder="Give a title to your note"
+                  {...field}
+                  rows={1}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="text"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Text</FormLabel>
+              <FormControl>
+                {/* //!TODO add a counting characters feature */}
+                <Textarea
+                  placeholder="Write your thoughts"
+                  {...field}
+                  rows={9}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

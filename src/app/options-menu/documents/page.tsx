@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import { api } from "../../../../convex/_generated/api";
 import { useOrganization } from "@clerk/nextjs";
+import DocumentSkeleton from "./components/DocumentSkeleton";
 
 function Home() {
   const organizationInfo = useOrganization();
@@ -40,20 +41,16 @@ function Home() {
           </div>
 
           {!documents && (
-            <div className="grid grid-cols-2 gap-4">
+            // <div className="grid grid-cols-2 gap-4">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               {new Array(6).fill("").map((_, i) => {
                 return (
-                  <Card
-                    key={i}
-                    className="h-[200px] p-4 flex flex-col justify-between"
-                  >
-                    <Skeleton className="h-[30px] rounded animate-pulse" />
-                    <Skeleton className="h-[30px] rounded" />
-                    <Skeleton className="w-[80px] h-[30px] rounded" />
-                  </Card>
+                  <li key={i}>
+                    <DocumentSkeleton />
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           )}
 
           {documents && (
@@ -77,12 +74,12 @@ function Home() {
           )}
 
           {documents && documents.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               {documents?.map((doc) => {
                 // return <div key={doc._id}>{doc.title}</div>;
                 return <DocumentCard document={doc} key={doc._id} />;
               })}
-            </div>
+            </ul>
           )}
         </main>
       </Authenticated>
